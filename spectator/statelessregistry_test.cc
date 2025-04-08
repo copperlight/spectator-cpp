@@ -67,6 +67,16 @@ TEST(StatelessRegistry, Gauge) {
   EXPECT_EQ(r.SentMessages(), expected);
 }
 
+TEST(StatelessRegistry, GaugeWithTTL) {
+  TestStatelessRegistry r;
+  auto g = r.GetGauge("foo", 1);
+  auto g2 = r.GetGauge("bar", 2, {{"id", "2"}});
+  g->Set(100);
+  g2->Set(101);
+  std::vector<std::string> expected = {"g,1:foo:100", "g,2:bar,id=2:101"};
+  EXPECT_EQ(r.SentMessages(), expected);
+}
+
 TEST(StatelessRegistry, MaxGauge) {
   TestStatelessRegistry r;
   auto m = r.GetMaxGauge("foo");
